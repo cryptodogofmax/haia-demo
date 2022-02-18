@@ -146,7 +146,7 @@ recommendation = html.Div(
             style={"margin-top": "5px"},
         ),
     ],
-    style={"margin": "10px"},
+    style={"margin-top": "30px"},
 )
 
 
