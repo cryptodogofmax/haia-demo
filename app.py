@@ -1,6 +1,10 @@
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
-from dash import Dash, dcc, html
+from dash import Dash, dcc, html, dash_table
+import pandas as pd
+import base64
+import datetime
+import io
 
 genders = ["F", "M"]
 ages = [i for i in range(1, 130)]
@@ -24,6 +28,10 @@ foods = [
     "Milk",
     "Coffee",
     "Minced Pork Congee with Preserved Egg",
+    "Massage",
+    "Gym",
+    "Spa",
+    "Laundry Service",
 ]
 foods_pic = {
     "Fried Chicken": "https://thestayathomechef.com/wp-content/uploads/2016/06/Fried-Chicken-4-1.jpg",
@@ -38,6 +46,10 @@ foods_pic = {
     "Coffee": "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/flat-white-d8ada0f.jpg",
     "Minced Pork Congee with Preserved Egg": "https://www.wokandkin.com/wp-content/uploads/2020/02/Century-Egg-and-Pork-Congee-saved-for-web-500x500.png",
     "Ice Cream": "https://blog.thermoworks.com/wp-content/uploads/2021/06/Ice_Cream_Compressed-43.jpg",
+    "Massage": "https://www.verywellmind.com/thmb/CmLHdpJtnYEufXl-I3MDeEJpdvA=/2119x1414/filters:fill(ABEAC3,1)/massagetable-7306e2120fe04d078ac1212bd6929e2b.jpg",
+    "Gym": "https://www.ucf.edu/news/files/2021/08/ucf-employee-gym.jpeg",
+    "Spa": "https://visionrcl.org.uk/wp-content/uploads/2021/11/053_Vision_Fullwell_Cross_Friday_13th_21-1024x683.jpg",
+    "Laundry Service": "https://www.centralpalms-hotel.com.np/wp-content/uploads/2020/01/Laundry-Service.jpg",
 }
 
 
@@ -46,6 +58,18 @@ def find_food(age, gender, country):
         return ""
     if age < 5:
         return "Milk"
+
+    if age > 25 and age <= 30:
+        if gender == "F":
+            return "Spa"
+        else:
+            return "Gym"
+
+    if age > 30 and age < 50:
+        if gender == "F":
+            return "Laundry Service"
+        else:
+            return "Massage"
 
     if age > 80:
         return "Coffee"
@@ -149,6 +173,79 @@ recommendation = html.Div(
     style={"margin-top": "30px"},
 )
 
+uploadFilesDiv = html.Div(
+    [
+        dcc.Upload(
+            id="upload-data",
+            children=html.Div(["Drag and Drop or ", html.A("Select Files")]),
+            style={
+                "width": "100%",
+                "height": "60px",
+                "lineHeight": "60px",
+                "borderWidth": "1px",
+                "borderStyle": "dashed",
+                "borderRadius": "5px",
+                "textAlign": "center",
+                "margin": "10px",
+            },
+            # Allow multiple files to be uploaded
+            multiple=True,
+        ),
+        html.Div(id="output-data-upload"),
+    ]
+)
+
+
+def parse_contents(contents, filename, date):
+    content_type, content_string = contents.split(",")
+
+    decoded = base64.b64decode(content_string)
+    try:
+        if "csv" in filename:
+            # Assume that the user uploaded a CSV file
+            df = pd.read_csv(io.StringIO(decoded.decode("utf-8")))
+        elif "xls" in filename:
+            # Assume that the user uploaded an excel file
+            df = pd.read_excel(filename, engine="openpyxl")
+            df = df.head(1)
+    except Exception as e:
+        print(e)
+        return html.Div(["There was an error processing this file."])
+
+    return html.Div(
+        [
+            html.H5(filename),
+            html.H6(datetime.datetime.fromtimestamp(date)),
+            dash_table.DataTable(
+                df.to_dict("records"),
+                [{"name": i, "id": i} for i in df.columns],
+                style_as_list_view=True,
+            ),
+            html.Hr(),  # horizontal line
+            # For debugging, display the raw contents provided by the web browser
+            html.Div("Raw Content"),
+            html.Pre(
+                contents[0:200] + "...",
+                style={"whiteSpace": "pre-wrap", "wordBreak": "break-all"},
+            ),
+        ]
+    )
+
+
+@app.callback(
+    Output("output-data-upload", "children"),
+    Input("upload-data", "contents"),
+    State("upload-data", "filename"),
+    State("upload-data", "last_modified"),
+)
+def update_output(list_of_contents, list_of_names, list_of_dates):
+    if list_of_contents is not None:
+        children = [
+            parse_contents(c, n, d)
+            for c, n, d in zip(list_of_contents, list_of_names, list_of_dates)
+        ]
+        return children
+
 
 @app.callback(
     Output(component_id="recommendation", component_property="children"),
@@ -167,8 +264,15 @@ def generate_recommendation(age, gender, country):
 
 
 form = dbc.Form(
-    [title, ageDropdown, genderDropdown, countryDropdown, recommendation],
-    style={"width": "500px", "margin": "30px auto auto auto"},
+    [
+        recommendation,
+        title,
+        ageDropdown,
+        genderDropdown,
+        countryDropdown,
+        uploadFilesDiv,
+    ],
+    style={"margin": "30px auto auto auto"},
 )
 
 app.layout = form
