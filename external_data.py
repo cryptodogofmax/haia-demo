@@ -110,7 +110,7 @@ def find_food(age, gender, country):
 
 app = Dash(__name__)
 
-title = html.H2(
+title = html.H1(
     children="Hotel AI Assistant Mockup",
     style={"text-align": "center", "margin-bottom": "10px"},
 )
@@ -166,13 +166,9 @@ foodDropdown = html.Div(
 recommendation = html.Div(
     [
         html.Div(
-            id="recommendation",
-            style={"margin-top": "5px"},
-        ),
-        html.Div(
             [
                 html.Button(
-                    "Generate Top 5 items to recommend",
+                    "Generate Top 3 items to recommend",
                     id="submit-val",
                     n_clicks=0,
                     style={
@@ -280,28 +276,12 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
 
 
 @app.callback(
-    Output(component_id="recommendation", component_property="children"),
-    Input(component_id="ageDropdown", component_property="value"),
-    Input(component_id="genderDropdown", component_property="value"),
-    Input(component_id="countryDropdown", component_property="value"),
-)
-def generate_recommendation(age, gender, country):
-    if age and gender and country:
-        food = find_food(age=age, gender=gender, country=country)
-        print(food, foods_pic[food])
-        src = foods_pic[food]
-        return html.Img(src=src, style={"width": "500px"})
-    else:
-        return html.H3("The information provided is not enough.")
-
-
-@app.callback(
     Output("container-button-basic", "children"),
     Input("submit-val", "n_clicks"),
 )
 def click_recommendation_button(n_clicks):
     top3 = random.sample(foods, 3)
-    if n_clicks > 0:
+    if n_clicks % 2 != 0:
         return html.Div(
             [
                 html.Img(
@@ -319,10 +299,10 @@ def click_recommendation_button(n_clicks):
 form = dbc.Form(
     [
         title,
+        uploadFilesDiv,
         ageDropdown,
         genderDropdown,
         countryDropdown,
-        uploadFilesDiv,
         recommendation,
     ],
     style={
@@ -344,7 +324,7 @@ app.layout = html.Div(
                 "bottom": "0",
                 "opacity": "0.5",
                 "z-index": "-1",
-                "height": "1600px",
+                "height": "2500px",
             },
         ),
         form,

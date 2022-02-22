@@ -429,7 +429,7 @@ app.layout = html.Div(
                 "bottom": "0",
                 "opacity": "0.5",
                 "z-index": "-1",
-                "height":"1600px",
+                "height": "1600px",
             },
         ),
         form,
