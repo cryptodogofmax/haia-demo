@@ -5,6 +5,7 @@ import pandas as pd
 import base64
 import datetime
 import io
+import numpy as np
 
 genders = ["F", "M"]
 ages = [i for i in range(1, 130)]
@@ -109,7 +110,7 @@ def find_food(age, gender, country):
 
 app = Dash(__name__)
 
-title = html.H2(
+title = html.H1(
     children="Hotel AI Assistant Mockup",
     style={"text-align": "center", "margin-bottom": "10px"},
 )
@@ -164,17 +165,33 @@ foodDropdown = html.Div(
 
 recommendation = html.Div(
     [
-        dbc.Label("=> Recommendation:", html_for="recommendation"),
         html.Div(
-            id="recommendation",
-            style={"margin-top": "5px"},
-        ),
+            [
+                html.Button(
+                    "Generate Top 5 items to recommend",
+                    id="submit-val",
+                    n_clicks=0,
+                    style={
+                        "margin-bottom": "20px",
+                        "height": "50px",
+                    },
+                ),
+                html.Div(
+                    id="container-button-basic",
+                    children="Enter a value and press submit",
+                ),
+            ],
+            style={
+                "text-align": "center",
+            },
+        )
     ],
     style={"margin-top": "30px"},
 )
 
 uploadFilesDiv = html.Div(
     [
+        html.H2("What are the products available to provide?"),
         dcc.Upload(
             id="upload-data",
             children=html.Div(
@@ -188,18 +205,26 @@ uploadFilesDiv = html.Div(
                 "borderStyle": "dashed",
                 "borderRadius": "5px",
                 "textAlign": "center",
-                "margin": "10px",
+                "margin": "10px auto 0 auto",
+                "background-color": "lightyellow",
             },
             # Allow multiple files to be uploaded
             multiple=True,
         ),
-        html.Div(id="output-data-upload"),
+        html.Div(
+            id="output-data-upload",
+            style={
+                "background-color": "lightyellow",
+                "padding": "10px",
+            },
+        ),
+        html.Div(id="codes_df"),
     ],
-    style={"background-color": "lightyellow"},
 )
 
 uploadCustomerProfileDiv = html.Div(
     [
+        html.H2("To get the customer non-ID information:"),
         dcc.Upload(
             id="customer-upload-data",
             children=html.Div(
@@ -213,14 +238,20 @@ uploadCustomerProfileDiv = html.Div(
                 "borderStyle": "dashed",
                 "borderRadius": "5px",
                 "textAlign": "center",
-                "margin": "10px",
+                "margin": "10px auto 0 auto",
+                "background-color": "lightblue",
             },
             # Allow multiple files to be uploaded
             multiple=True,
         ),
-        html.Div(id="customer-output-data-upload"),
+        html.Div(
+            id="customer-output-data-upload",
+            style={
+                "background-color": "lightblue",
+                "padding": "10px",
+            },
+        ),
     ],
-    style={"background-color": "lightblue"},
 )
 
 
@@ -256,10 +287,13 @@ def parse_contents(contents, filename, date):
                 },
             ),
         ],
+        style={
+            "background-color": "lightyellow",
+        },
     )
 
 
-def parse_customer_profilecontents(contents, filename, date):
+def parse_customer_profile_contents(contents, filename, date):
     content_type, content_string = contents.split(",")
 
     decoded = base64.b64decode(content_string)
@@ -270,8 +304,6 @@ def parse_customer_profilecontents(contents, filename, date):
         elif "xls" in filename:
             # Assume that the user uploaded an excel file
             df = pd.read_excel(filename, engine="openpyxl")
-            df = df[["Product Code", "Product Code Details"]]
-            df = df.drop_duplicates("Product Code Details")
     except Exception as e:
         print(e)
         return html.Div(["There was an error processing this file."])
@@ -280,18 +312,46 @@ def parse_customer_profilecontents(contents, filename, date):
         [
             html.H3(filename),
             html.H4(f"Upload time: {datetime.datetime.fromtimestamp(date)}"),
-            html.H4(f"{len(df)} product codes in total"),
             dash_table.DataTable(
                 df.to_dict("records"),
                 [{"name": i, "id": i} for i in df.columns],
                 style_as_list_view=True,
                 style_table={
                     "overflowX": "scroll",
-                    "height": "350px",
                 },
             ),
         ],
+        style={
+            "background-color": "lightblue",
+        },
     )
+
+
+def get_codes():
+    df = pd.read_excel("CKS - Package Codes.xlsx", engine="openpyxl")
+    df = df[["Product Code", "Product Code Details"]]
+    df = df.drop_duplicates("Product Code Details")
+    return df
+
+
+def get_customer():
+    df = pd.read_excel("CustomerProfile01.xlsx", engine="openpyxl")
+    return df
+
+
+@app.callback(
+    Output("output-data-upload", "children"),
+    Input("upload-data", "contents"),
+    State("upload-data", "filename"),
+    State("upload-data", "last_modified"),
+)
+def update_output(list_of_contents, list_of_names, list_of_dates):
+    if list_of_contents is not None:
+        children = [
+            parse_contents(c, n, d)
+            for c, n, d in zip(list_of_contents, list_of_names, list_of_dates)
+        ]
+        return children
 
 
 @app.callback(
@@ -303,10 +363,34 @@ def parse_customer_profilecontents(contents, filename, date):
 def update_customer_profile_output(list_of_contents, list_of_names, list_of_dates):
     if list_of_contents is not None:
         children = [
-            parse_contents(c, n, d)
+            parse_customer_profile_contents(c, n, d)
             for c, n, d in zip(list_of_contents, list_of_names, list_of_dates)
         ]
         return children
+
+
+@app.callback(
+    Output("container-button-basic", "children"),
+    Input("submit-val", "n_clicks"),
+)
+def click_recommendation_button(n_clicks):
+    df = get_codes()
+    df = df.sample(n=5)
+    df.index = np.arange(1, len(df) + 1)
+    df = df.reset_index()
+    if n_clicks > 0:
+        return html.Div(
+            [
+                dash_table.DataTable(
+                    df.to_dict("records"),
+                    [{"name": i, "id": i} for i in df.columns],
+                    style_as_list_view=True,
+                    style_table={
+                        "overflowX": "scroll",
+                    },
+                ),
+            ]
+        )
 
 
 # @app.callback(
@@ -324,15 +408,33 @@ def update_customer_profile_output(list_of_contents, list_of_names, list_of_date
 
 form = dbc.Form(
     [
-        recommendation,
         title,
         uploadFilesDiv,
         uploadCustomerProfileDiv,
+        recommendation,
     ],
     style={"width": "600px", "margin": "30px auto auto auto"},
 )
 
-app.layout = form
+app.layout = html.Div(
+    [
+        html.Div(
+            style={
+                "background": "url(https://cdn.pixabay.com/photo/2014/07/21/19/20/lobby-398845_1280.jpg) no-repeat center center fixed",
+                "background-size": "cover",
+                "position": "absolute",
+                "left": "0",
+                "right": "0",
+                "top": "0",
+                "bottom": "0",
+                "opacity": "0.5",
+                "z-index": "-1",
+                "height":"1600px",
+            },
+        ),
+        form,
+    ],
+)
 
 if __name__ == "__main__":
     app.run_server(debug=True, port=8051)
