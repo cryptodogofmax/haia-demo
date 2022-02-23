@@ -301,7 +301,7 @@ def generate_recommendation(age, gender, country):
 )
 def click_recommendation_button(n_clicks):
     top3 = random.sample(foods, 3)
-    if n_clicks > 0:
+    if n_clicks % 2 != 0:
         return html.Div(
             [
                 html.Img(
