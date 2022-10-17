@@ -2,3 +2,5 @@
 venv/*
 ~$*.xlsx
 *.mp4
+*.jpeg
+.ipynb_checkpoints/*

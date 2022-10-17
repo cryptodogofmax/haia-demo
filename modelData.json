@@ -1,0 +1,62 @@
+{
+  "customer1": {
+    "customer": "customer1",
+    "Guest Name ID": 7951329,
+    "Country": "Singapore",
+    "VIP": "Dignitaries",
+    "Resort": "Copthorne Kings",
+    "Nights": 1,
+    "Market Code": "Corporate BAR",
+    "Room Category": "DLX1Q",
+    "Purchase history": "Buffet,Chicken Satay and Nonya Kueh"
+  },
+  "customer2": {
+    "customer": "customer2",
+    "Guest Name ID": 9484011,
+    "Country": "India",
+    "VIP": "None",
+    "Resort": "Grand Copthorne Waterfront",
+    "Nights": 3,
+    "Market Code": "Best Available Rate",
+    "Room Category": "CL1K",
+    "Purchase history": "Buffet Dinner, Brandy, Laundry service on M TROUSERS"
+  },
+  "customer3": {
+    "customer": "customer3",
+    "Guest Name ID": 9256838,
+    "Country": "United States",
+    "VIP": "Long Stay",
+    "Resort": "M Hotel",
+    "Nights": 15,
+    "Market Code": "Local - Corporate Rate Level A",
+    "Room Category": "CL1K",
+    "Purchase history": "Rolling Rock, Donut Goldenfry"
+  },
+  "food": {
+    "33689 Chinese Set": "https://static.thehoneycombers.com/wp-content/uploads/sites/2/2022/01/chinese-restaurants-singapore.jpeg",
+    "85399 PT BF Satay": "https://yassin.com.sg/site/wp-content/uploads/2020/02/v-100.jpg",
+    "89429 Crew Meal": "https://www.thesegoldwings.com/wp-content/uploads/2011/02/crew-meal.jpg?ezimgfmt=ng%3Awebp%2Fngcb1%2Frs%3Adevice%2Frscb1-1",
+    "33667 Vegeterian Set": "http://sethlui.com/wp-content/uploads/2019/09/33-Vegetarian-5-800x533.jpg",
+    "89096 PT BF Western Set": "https://media-cdn.tripadvisor.com/media/photo-s/16/dc/a4/e8/char-coal-grill-steak.jpg"
+  },
+  "drink": {
+    "47033 Fruit Juice": "https://files.selecthealth.cloud/api/public/content/226070-fuice_juice_blog_lg.jpg",
+    "47032 Soft Drinks": "https://www.foodbeverageinsider.com/sites/foodbeverageinsider.com/files/styles/article_featured_standard/public/FBI%20carbonated%20soft%20drinks.jpg?itok=PXKTdVMR",
+    "87031 Tiger Beer": "https://www.heinekenmalaysia.com/wp-content/uploads/2019/12/tiger_brands_210521-ver5-1.png",
+    "89325 Coke 22": "https://admin115421-prod.s3.ap-southeast-2.amazonaws.com/public/product-PXzlfa5oxIsGoWhDYpf_T-0-350-350.jpg",
+    "89652 Ice Bucket": "https://cf.shopee.sg/file/7ba85fd232a1735efce0069de54b2c9b"
+  },
+  "Laundry Service": {
+    "37674 T-SHIRT": "https://m.media-amazon.com/images/I/61orYO-1FXL._AC_SX679_.jpg",
+    "37678 TROUSERS": "https://www.costco.com.au/medias/sys_master/images/h7d/h17/79638274572318.webp",
+    "37680 SKIRT": "https://images.vestiairecollective.com/cdn-cgi/image/w=500,h=undefined,q=80,f=auto,/produit/20176537-1_2.jpg",
+    "6010 JACKET DC": "https://m.media-amazon.com/images/I/71meosa2J0L._AC_SX569_.jpg"
+  },
+  "Retail": {
+    "77632 Kiosk Honey Macadamia Nuts": "https://m.media-amazon.com/images/I/91uwdG1g8CL._AC_SY679_.jpg",
+    "77653 Kiosk Soya Bean Chilli Sauce": "https://m.media-amazon.com/images/I/71cgtFDAlyL.__AC_SX300_SY300_QL70_ML2_.jpg",
+    "89465 Easter 4pc Praline set": "https://cdn11.bigcommerce.com/s-ixp7mwrxqq/images/stencil/640w/products/966/84707/uc_export_download&id_1kafcE_bjh98r4VuZ61SfP8i7FVTr1GnT__23048.1652517187.jpg?c=2",
+    "89477 Easter Popping Grape": "https://lzd-img-global.slatic.net/g/p/b0f5708bfe5eb7aa7af9192cee0951c9.jpg_720x720q80.jpg_.webp",
+    "84080 Whole Dill Pickles": "https://m.media-amazon.com/images/I/81b05IvRaaL._AC_SY679_.jpg"
+  }
+}
